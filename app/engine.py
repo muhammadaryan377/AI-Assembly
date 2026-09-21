@@ -40,9 +40,11 @@ def actions_conflict(a: str, b: str) -> bool:
     na, nb = normalize(a), normalize(b)
     if na == nb:
         return False
+
     negative = ("do not", "don't", "stop", "block", "avoid", "never")
     a_neg = any(token in na for token in negative)
     b_neg = any(token in nb for token in negative)
+
     if a_neg != b_neg:
         return True
     return na != nb
@@ -95,14 +97,15 @@ class KnowledgeEngine:
     def inspect_knowledge_state(self, topic: str) -> dict[str, Any]:
         rules = self.store.list_rules(topic)
         open_conflicts = [
-            c for c in self.store.list_conflicts("open")
-            if normalize(c["topic"]) == normalize(topic)
+            conflict
+            for conflict in self.store.list_conflicts("open")
+            if normalize(conflict["topic"]) == normalize(topic)
         ]
         seen_dimensions = sorted(
-            {normalize(k) for rule in rules for k in rule["conditions"].keys()}
+            {normalize(key) for rule in rules for key in rule["conditions"].keys()}
         )
         expected = DEFAULT_DIMENSIONS.get(normalize(topic), seen_dimensions)
-        missing = [d for d in expected if normalize(d) not in seen_dimensions]
+        missing = [dimension for dimension in expected if normalize(dimension) not in seen_dimensions]
 
         if expected:
             coverage = round(100 * (len(expected) - len(missing)) / len(expected))
@@ -116,9 +119,7 @@ class KnowledgeEngine:
             )
         elif missing:
             dimension = missing[0].replace("_", " ")
-            next_question = (
-                f"Ask the expert how the decision changes when {dimension} changes."
-            )
+            next_question = f"Ask the expert how the decision changes when {dimension} changes."
         elif len(rules) < 5:
             next_question = (
                 "Ask for an exception or edge case where the normal rule should not be followed."
@@ -142,20 +143,25 @@ class KnowledgeEngine:
         self, topic: str, observations: dict[str, Any]
     ) -> dict[str, Any]:
         rules = self.store.list_rules(topic)
-        obs = {normalize(k): normalize(v) for k, v in observations.items()}
-        candidates: list[dict[str, Any]] = []
+        obs = {normalize(key): normalize(value) for key, value in observations.items()}
+
+        full_matches: list[dict[str, Any]] = []
+        partial_matches: list[dict[str, Any]] = []
 
         for rule in rules:
-            cond = {normalize(k): normalize(v) for k, v in rule["conditions"].items()}
-            if not cond:
+            conditions = {
+                normalize(key): normalize(value)
+                for key, value in rule["conditions"].items()
+            }
+            if not conditions:
                 continue
 
             matched = 0
             mismatched = 0
             unknown = 0
-            evidence = []
+            evidence: list[str] = []
 
-            for key, expected in cond.items():
+            for key, expected in conditions.items():
                 actual = obs.get(key)
                 if actual is None:
                     unknown += 1
@@ -165,31 +171,50 @@ class KnowledgeEngine:
                 else:
                     mismatched += 1
 
+            # A known mismatch rules the candidate out completely.
             if mismatched:
                 continue
 
-            specificity = matched / max(1, len(cond))
+            specificity = matched / max(1, len(conditions))
             completeness = matched / max(1, matched + unknown)
-            score = round((0.7 * specificity + 0.3 * completeness) * rule["confidence"], 4)
-            candidates.append(
-                {
-                    "score": score,
-                    "matched_evidence": evidence,
-                    "rule": rule,
-                    "unverified_conditions": [
-                        key for key in cond if key not in obs
-                    ],
-                }
+            score = round(
+                (0.7 * specificity + 0.3 * completeness) * rule["confidence"],
+                4,
             )
+            candidate = {
+                "score": score,
+                "matched_evidence": evidence,
+                "rule": rule,
+                "unverified_conditions": [
+                    key for key in conditions if key not in obs
+                ],
+            }
 
-        candidates.sort(key=lambda item: item["score"], reverse=True)
-        best = candidates[0] if candidates else None
+            if unknown == 0:
+                full_matches.append(candidate)
+            else:
+                partial_matches.append(candidate)
+
+        full_matches.sort(key=lambda item: item["score"], reverse=True)
+        partial_matches.sort(key=lambda item: item["score"], reverse=True)
+
+        best = full_matches[0] if full_matches else None
+        partial = partial_matches[0] if partial_matches else None
+
+        if best:
+            status = "matched"
+        elif partial:
+            status = "needs_clarification"
+        else:
+            status = "insufficient_evidence"
+
         result = {
             "topic": topic,
             "observations": observations,
             "match": best,
-            "alternatives": candidates[1:4],
-            "status": "matched" if best else "insufficient_evidence",
+            "partial_match": partial,
+            "alternatives": full_matches[1:4],
+            "status": status,
         }
         self.store.add_audit("guidance.queried", result)
         return result
