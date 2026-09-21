@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#07100e" />
+  <title>TacitOS — Capture What Manuals Never Could</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <div class="noise"></div>
+  <main class="shell">
+    <header class="topbar">
+      <a class="brand" href="/">
+        <span class="brand-mark">T</span>
+        <span>
+          <strong>TacitOS</strong>
+          <small>Voice-to-Expertise Intelligence</small>
+        </span>
+      </a>
+      <div class="status-pill" id="connectionStatus">
+        <span class="status-dot"></span>
+        Offline
+      </div>
+    </header>
+
+    <section class="hero">
+      <div>
+        <p class="eyebrow">ASSEMBLYAI VOICE AGENT HACKATHON</p>
+        <h1>Capture what experts know <em>but never wrote down.</em></h1>
+        <p class="hero-copy">
+          TacitOS interviews experts by voice, compiles their tacit decisions into
+          traceable rules, finds contradictions and knowledge gaps, then lets the
+          next worker talk to that expertise.
+        </p>
+      </div>
+      <div class="hero-card">
+        <span>LIVE KNOWLEDGE COMPILER</span>
+        <div class="signal">
+          <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+        </div>
+        <strong id="heroState">Waiting for a voice session</strong>
+      </div>
+    </section>
+
+    <section class="workspace">
+      <div class="voice-panel panel">
+        <div class="panel-head">
+          <div>
+            <p class="kicker">01 / CONVERSATION</p>
+            <h2>Voice session</h2>
+          </div>
+          <div class="segmented" role="tablist" aria-label="TacitOS mode">
+            <button class="mode active" data-mode="capture">Expert Capture</button>
+            <button class="mode" data-mode="apprentice">Apprentice</button>
+          </div>
+        </div>
+
+        <div class="voice-orb-wrap">
+          <button class="voice-orb" id="voiceButton" aria-label="Start voice session">
+            <span class="orb-core">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 15.25a3.75 3.75 0 0 0 3.75-3.75v-5a3.75 3.75 0 0 0-7.5 0v5A3.75 3.75 0 0 0 12 15.25Zm-5.5-4a.75.75 0 0 1 1.5 0 4 4 0 0 0 8 0 .75.75 0 0 1 1.5 0 5.5 5.5 0 0 1-4.75 5.45V19h2.5a.75.75 0 0 1 0 1.5h-6.5a.75.75 0 0 1 0-1.5h2.5v-2.3A5.5 5.5 0 0 1 6.5 11.25Z"/>
+              </svg>
+            </span>
+          </button>
+          <div>
+            <strong id="voiceCta">Start expert interview</strong>
+            <p id="voiceHint">Your API key stays on the server.</p>
+          </div>
+        </div>
+
+        <div class="demo-prompt" id="demoPrompt">
+          <span>TRY THIS</span>
+          <p>“Normally I restart Pump B after an overload, but not if vibration was high and suction pressure was falling.”</p>
+        </div>
+
+        <div class="transcript" id="transcript">
+          <div class="empty-state">
+            <span>◌</span>
+            <p>Live transcript and tool actions will appear here.</p>
+          </div>
+        </div>
+      </div>
+
+      <aside class="intel-panel panel">
+        <div class="panel-head compact">
+          <div>
+            <p class="kicker">02 / KNOWLEDGE STATE</p>
+            <h2>Intelligence map</h2>
+          </div>
+          <button class="icon-button" id="refreshButton" aria-label="Refresh dashboard">↻</button>
+        </div>
+
+        <div class="metric-grid">
+          <article><span>Rules</span><strong id="rulesMetric">0</strong></article>
+          <article><span>Experts</span><strong id="expertsMetric">0</strong></article>
+          <article><span>Conflicts</span><strong id="conflictsMetric">0</strong></article>
+          <article><span>Topics</span><strong id="topicsMetric">0</strong></article>
+        </div>
+
+        <div class="coverage-card">
+          <div class="coverage-row">
+            <span>Knowledge coverage</span>
+            <strong id="coverageMetric">0%</strong>
+          </div>
+          <div class="progress"><i id="coverageBar"></i></div>
+          <p id="coverageNote">Capture the first rule to start mapping expertise.</p>
+        </div>
+
+        <div class="feed-block">
+          <div class="feed-title">
+            <span>Captured rules</span>
+            <small id="ruleCountLabel">0 total</small>
+          </div>
+          <div class="rule-feed" id="ruleFeed">
+            <p class="muted">No rules captured yet.</p>
+          </div>
+        </div>
+
+        <div class="feed-block">
+          <div class="feed-title">
+            <span>Contradiction radar</span>
+            <small>human review</small>
+          </div>
+          <div class="conflict-feed" id="conflictFeed">
+            <p class="muted">No open contradictions.</p>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="proof-strip">
+      <div>
+        <span>PROVENANCE</span>
+        <strong>Who said it</strong>
+      </div>
+      <div>
+        <span>TRACEABILITY</span>
+        <strong>Why it matches</strong>
+      </div>
+      <div>
+        <span>ACTIVE LEARNING</span>
+        <strong>What to ask next</strong>
+      </div>
+      <div>
+        <span>CONFLICT SAFETY</span>
+        <strong>Never silently overwrite</strong>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="/static/app.js"></script>
+</body>
+</html>
