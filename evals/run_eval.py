@@ -1,8 +1,13 @@
 from __future__ import annotations
 
 import json
+import sys
 import tempfile
 from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
 from app.engine import KnowledgeEngine
 from app.models import RuleInput
@@ -16,7 +21,7 @@ def build_engine() -> KnowledgeEngine:
     engine = KnowledgeEngine(store)
     engine._eval_temp_dir = temp_dir  # keep directory alive for the run
 
-    seed = json.loads(Path("data/seed_expertise.json").read_text())
+    seed = json.loads((ROOT / "data/seed_expertise.json").read_text())
     for item in seed["example_rules"]:
         engine.capture_rule(
             RuleInput(
@@ -34,7 +39,7 @@ def build_engine() -> KnowledgeEngine:
 
 def main() -> None:
     engine = build_engine()
-    scenarios = json.loads(Path("evals/scenarios.json").read_text())
+    scenarios = json.loads((ROOT / "evals/scenarios.json").read_text())
 
     correct = 0
     unsupported = 0
@@ -71,6 +76,9 @@ def main() -> None:
     print(f"Scenario accuracy:         {accuracy:.1%}")
     print(f"Unsupported guidance rate: {unsupported_rate:.1%}")
     print(f"Scenarios:                 {total}")
+
+    if correct != total or unsupported != 0:
+        raise SystemExit(1)
 
 
 if __name__ == "__main__":
