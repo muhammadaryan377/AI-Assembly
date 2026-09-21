@@ -1,0 +1,38 @@
+[
+  {
+    "id": "S001",
+    "topic": "Pump B restart",
+    "observations": {"shutdown_reason": "overload", "vibration": "high", "suction_pressure": "falling"},
+    "expected_action_contains": "do not restart"
+  },
+  {
+    "id": "S002",
+    "topic": "Pump B restart",
+    "observations": {"shutdown_reason": "overload", "vibration": "high", "suction_pressure": "normal"},
+    "expected_action_contains": "coupling"
+  },
+  {
+    "id": "S003",
+    "topic": "Pump B restart",
+    "observations": {"shutdown_reason": "overload", "vibration": "low", "suction_pressure": "falling"},
+    "expected_action_contains": null
+  },
+  {
+    "id": "S004",
+    "topic": "Pump B restart",
+    "observations": {"shutdown_reason": "overload", "vibration": "high"},
+    "expected_action_contains": null
+  },
+  {
+    "id": "S005",
+    "topic": "Pump B restart",
+    "observations": {"shutdown_reason": "overload", "vibration": "high", "suction_pressure": "falling", "temperature": "normal"},
+    "expected_action_contains": "do not restart"
+  },
+  {
+    "id": "S006",
+    "topic": "Pump B restart",
+    "observations": {"shutdown_reason": "overload", "vibration": "high", "suction_pressure": "normal", "load": "low"},
+    "expected_action_contains": "coupling"
+  }
+]
