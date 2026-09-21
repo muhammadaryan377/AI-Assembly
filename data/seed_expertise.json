@@ -1,0 +1,25 @@
+{
+  "demo_topic": "Pump B restart",
+  "expert": "Alex Morgan",
+  "story": "A senior maintenance engineer is retiring after 22 years. TacitOS interviews Alex and captures the decision logic that never made it into the manual.",
+  "example_rules": [
+    {
+      "conditions": {
+        "shutdown_reason": "overload",
+        "vibration": "high",
+        "suction_pressure": "falling"
+      },
+      "action": "Do not restart. Inspect for cavitation first.",
+      "rationale": "High vibration plus falling suction pressure before shutdown is a cavitation pattern."
+    },
+    {
+      "conditions": {
+        "shutdown_reason": "overload",
+        "vibration": "high",
+        "suction_pressure": "normal"
+      },
+      "action": "Inspect the coupling before restart.",
+      "rationale": "High vibration without suction pressure loss points away from cavitation."
+    }
+  ]
+}
